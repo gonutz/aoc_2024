@@ -124,56 +124,65 @@ fn day3() void {
 }
 
 fn parseMul(s: []const u8, at: usize) !i64 {
-    var p = mulParser{
+    var p = parser{
         .s = s,
         .i = at,
     };
+
     try p.eat('m');
     try p.eat('u');
     try p.eat('l');
     try p.eat('(');
+
+    var a: i64 = p.next() - '0';
     if (!isDigit(p.peek())) {
         return 0;
     }
-    var a: i64 = p.next() - '0';
     if (isDigit(p.peek())) {
         a = 10 * a + (p.next() - '0');
     }
     if (isDigit(p.peek())) {
         a = 10 * a + p.next() - '0';
     }
+
     try p.eat(',');
+
+    var b: i64 = p.next() - '0';
     if (!isDigit(p.peek())) {
         return 0;
     }
-    var b: i64 = p.next() - '0';
     if (isDigit(p.peek())) {
         b = 10 * b + p.next() - '0';
     }
     if (isDigit(p.peek())) {
         b = 10 * b + p.next() - '0';
     }
+
     try p.eat(')');
+
     return a * b;
 }
 
 fn parseDo(s: []const u8, at: usize) !bool {
-    var p = mulParser{
+    var p = parser{
         .s = s,
         .i = at,
     };
+
     try p.eat('d');
     try p.eat('o');
     try p.eat('(');
     try p.eat(')');
+
     return true;
 }
 
 fn parseDont(s: []const u8, at: usize) !bool {
-    var p = mulParser{
+    var p = parser{
         .s = s,
         .i = at,
     };
+
     try p.eat('d');
     try p.eat('o');
     try p.eat('n');
@@ -181,22 +190,23 @@ fn parseDont(s: []const u8, at: usize) !bool {
     try p.eat('t');
     try p.eat('(');
     try p.eat(')');
+
     return true;
 }
 
 const mulParseError = error{NotEaten};
 
-const mulParser = struct {
+const parser = struct {
     s: []const u8,
     i: usize,
 
-    fn eat(self: *mulParser, c: u8) !void {
+    fn eat(self: *parser, c: u8) !void {
         if (self.next() != c) {
             return mulParseError.NotEaten;
         }
     }
 
-    fn next(self: *mulParser) u8 {
+    fn next(self: *parser) u8 {
         if (self.i >= self.s.len) {
             return 0;
         }
@@ -204,7 +214,7 @@ const mulParser = struct {
         return self.s[self.i - 1];
     }
 
-    fn peek(self: *mulParser) u8 {
+    fn peek(self: *parser) u8 {
         if (self.i >= self.s.len) {
             return 0;
         }
