@@ -12,10 +12,9 @@ fn day1() !void {
     var col1: [1000]i32 = undefined;
     var line_index: usize = 0;
     var lines = std.mem.splitSequence(u8, day1input, "\n");
-    while (lines.next()) |line| {
+    while (lines.next()) |line| : (line_index += 1) {
         col0[line_index] = try std.fmt.parseInt(i32, line[0..5], 10);
         col1[line_index] = try std.fmt.parseInt(i32, line[8..13], 10);
-        line_index += 1;
     }
     std.mem.sort(i32, &col0, {}, comptime std.sort.asc(i32));
     std.mem.sort(i32, &col1, {}, comptime std.sort.asc(i32));
