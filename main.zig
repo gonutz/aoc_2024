@@ -24,7 +24,7 @@ fn day1() !void {
         const diff = @abs(col0[i] - col1[i]);
         sum += diff;
     }
-    std.debug.print("day 1, part 1) {any}\n", .{sum});
+    std.debug.print("day 1, part 1) {any}, right answer: 1319616\n", .{sum});
 
     var counts: [1000]u32 = [_]u32{0} ** 1000;
     for (0..1000) |i| {
@@ -38,7 +38,7 @@ fn day1() !void {
     for (0..1000) |i| {
         similarity += @as(i64, col0[i]) * @as(i64, counts[i]);
     }
-    std.debug.print("day 1, part 2) {any}\n", .{similarity});
+    std.debug.print("day 1, part 2) {any}, right answer: 27267728\n", .{similarity});
 }
 
 fn day2() !void {
@@ -71,8 +71,8 @@ fn day2() !void {
             }
         }
     }
-    std.debug.print("day 2, part 1) {any}\n", .{safe_count_part_1});
-    std.debug.print("day 2, part 2) {any}\n", .{safe_count_part_2});
+    std.debug.print("day 2, part 1) {any}, right answer: 246\n", .{safe_count_part_1});
+    std.debug.print("day 2, part 2) {any}, right answer: 318\n", .{safe_count_part_2});
 }
 
 fn is_increasing_or_decreasing(nums: [20]i32, n: usize) bool {
@@ -120,8 +120,8 @@ fn day3() void {
 
         i += 1;
     }
-    std.debug.print("day 3, part 1) {any}\n", .{all_sum});
-    std.debug.print("day 3, part 2) {any}\n", .{do_sum});
+    std.debug.print("day 3, part 1) {any}, right answer: 166357705\n", .{all_sum});
+    std.debug.print("day 3, part 2) {any}, right answer: 88811886\n", .{do_sum});
 }
 
 fn parseMul(s: []const u8, at: usize) !i64 {
@@ -135,10 +135,10 @@ fn parseMul(s: []const u8, at: usize) !i64 {
     try p.eat('l');
     try p.eat('(');
 
-    var a: i64 = p.next() - '0';
     if (!isDigit(p.peek())) {
         return 0;
     }
+    var a: i64 = p.next() - '0';
     if (isDigit(p.peek())) {
         a = 10 * a + (p.next() - '0');
     }
@@ -148,10 +148,10 @@ fn parseMul(s: []const u8, at: usize) !i64 {
 
     try p.eat(',');
 
-    var b: i64 = p.next() - '0';
     if (!isDigit(p.peek())) {
         return 0;
     }
+    var b: i64 = p.next() - '0';
     if (isDigit(p.peek())) {
         b = 10 * b + p.next() - '0';
     }
@@ -252,8 +252,8 @@ fn day4() void {
         }
         y += 1;
     }
-    std.debug.print("day 4, part 1) {any}\n", .{xmas_count});
-    std.debug.print("day 4, part 2) {any}\n", .{mas_cross_count});
+    std.debug.print("day 4, part 1) {any}, right answer: 2599\n", .{xmas_count});
+    std.debug.print("day 4, part 2) {any}, right answer: 1948\n", .{mas_cross_count});
 }
 
 const charField = struct {
