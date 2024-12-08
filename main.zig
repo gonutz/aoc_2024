@@ -8,6 +8,7 @@ pub fn main() !void {
     try day5();
     day6();
     day7();
+    day8();
 }
 
 fn day1() !void {
@@ -621,6 +622,101 @@ fn concat(a: i128, b: i128) i128 {
     }
     return aa + b;
 }
+
+fn day8() void {
+    var world: [200][200]u8 = undefined;
+    var world_w: usize = 0;
+    var world_h: usize = 0;
+    var antennas: [256][20]Point = undefined;
+    var antenna_count: [256]usize = .{0} ** 256;
+    var lines = std.mem.splitSequence(u8, day8input, "\n");
+    while (lines.next()) |line| {
+        for (line, 0..) |c, x| {
+            world[x][world_h] = c;
+            if (c != '.') {
+                const n = antenna_count[c];
+                antennas[c][n] = Point{ .x = @intCast(x), .y = @intCast(world_h) };
+                antenna_count[c] += 1;
+            }
+        }
+        world_w = line.len;
+        world_h += 1;
+    }
+
+    var seen_part_1: [200][200]bool = undefined;
+    var seen_part_2: [200][200]bool = undefined;
+    for (0..world_w) |x| {
+        for (0..world_h) |y| {
+            seen_part_1[x][y] = false;
+            seen_part_2[x][y] = false;
+        }
+    }
+
+    var positions_part_1: usize = 0;
+    var positions_part_2: usize = 0;
+    for (0..255) |a| {
+        if (antenna_count[a] < 2) {
+            continue;
+        }
+        for (0..antenna_count[a] - 1) |i_0| {
+            for (i_0 + 1..antenna_count[a]) |i_1| {
+                const dx = antennas[a][i_0].x - antennas[a][i_1].x;
+                const dy = antennas[a][i_0].y - antennas[a][i_1].y;
+
+                // Part 1.
+                const x1 = antennas[a][i_0].x + dx;
+                const y1 = antennas[a][i_0].y + dy;
+                if (0 <= x1 and x1 < world_w and 0 <= y1 and y1 < world_h and !seen_part_1[@intCast(x1)][@intCast(y1)]) {
+                    positions_part_1 += 1;
+                    seen_part_1[@intCast(x1)][@intCast(y1)] = true;
+                }
+
+                const x2 = antennas[a][i_1].x - dx;
+                const y2 = antennas[a][i_1].y - dy;
+                if (0 <= x2 and x2 < world_w and 0 <= y2 and y2 < world_h and !seen_part_1[@intCast(x2)][@intCast(y2)]) {
+                    positions_part_1 += 1;
+                    seen_part_1[@intCast(x2)][@intCast(y2)] = true;
+                }
+
+                // Part 2.
+                var step: i32 = 0;
+                while (step < 200) {
+                    const x3 = antennas[a][i_0].x + step * dx;
+                    const y3 = antennas[a][i_0].y + step * dy;
+                    const in_bounds_3 = 0 <= x3 and x3 < world_w and 0 <= y3 and y3 < world_h;
+
+                    const x4 = antennas[a][i_0].x - step * dx;
+                    const y4 = antennas[a][i_0].y - step * dy;
+                    const in_bounds_4 = 0 <= x4 and x4 < world_w and 0 <= y4 and y4 < world_h;
+
+                    if (!in_bounds_3 and !in_bounds_4) {
+                        break;
+                    }
+
+                    if (in_bounds_3 and !seen_part_2[@intCast(x3)][@intCast(y3)]) {
+                        seen_part_2[@intCast(x3)][@intCast(y3)] = true;
+                        positions_part_2 += 1;
+                    }
+
+                    if (in_bounds_4 and !seen_part_2[@intCast(x4)][@intCast(y4)]) {
+                        seen_part_2[@intCast(x4)][@intCast(y4)] = true;
+                        positions_part_2 += 1;
+                    }
+
+                    step += 1;
+                }
+            }
+        }
+    }
+
+    std.debug.print("day 8, part 1) {}, right answer 357\n", .{positions_part_1});
+    std.debug.print("day 8, part 2) {}, right answer 1266\n", .{positions_part_2});
+}
+
+const Point = struct {
+    x: i32,
+    y: i32,
+};
 
 const day1input =
     \\85215   94333
@@ -5154,4 +5250,57 @@ const day7input =
     \\1117038228: 2 797 7 4 8 3 8 140 2 86
     \\13544236: 281 482 17 19
     \\69460233: 3 1 193 6 465 2 8 8 3 3 1
+;
+
+const day8input =
+    \\...............3................d.................
+    \\.........................s..7......i.....e........
+    \\................C.......................e.........
+    \\...............Z.......m....................e.....
+    \\....................gC.....q......................
+    \\...............Q....s..........................A..
+    \\................................s........A........
+    \\...........n.....3.C..F......w..m...d.............
+    \\..E...............3.....m......d.i................
+    \\............f.3.......C....d........A.............
+    \\.........Z...........................n..A.........
+    \\....Q......p..............g.i.....................
+    \\.r......n...Q....p............S.7...........O.....
+    \\..........r......K....p.....M..........7....G.....
+    \\....................Fs...................G........
+    \\..z.........D..........G.g........................
+    \\rR.............F................M...............G.
+    \\.........I..c.nr...............M................O.
+    \\...I..............................................
+    \\...................f......I.......................
+    \\z.I...............f..K..........0................7
+    \\k...................K......u.........O............
+    \\.........Q...z.................ga......0.......o..
+    \\....E.5..F..................u..b.P......a.1.......
+    \\..........k9..................K.........H......1..
+    \\.E.........h..........................0......a...H
+    \\..........9...h..e........i......M....1...........
+    \\.c.............z.......................j.........T
+    \\c..D......................Pb.................2....
+    \\....................w.y......W......j.........T.2.
+    \\......ph...N..................y.......W.t.2.......
+    \\............9.................................o..1
+    \\.................Vq.......u....Pb.................
+    \\.......6R.........................................
+    \\........5............w...a.W.............H.j......
+    \\......Z.......Y..........V............H..2........
+    \\..........D.................v..y.........t...T..o.
+    \\.......5...................t......................
+    \\........8k...l...............v.........S....T...4.
+    \\......6....U......PR........b.B....y..............
+    \\..........6.V...U........................L........
+    \\.......8.........N....4.Vq.v..t......oJ.....L.....
+    \\N...........R.................w.JY................
+    \\............N.....................................
+    \\.....5Y.....................................j.....
+    \\.98........Y.....l.............B...........S...L..
+    \\.8...............U...............4................
+    \\..................W.........U4....................
+    \\...E........l..........B......................L..u
+    \\.....D............l....J..q.....................S.
 ;
