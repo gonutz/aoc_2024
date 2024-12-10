@@ -721,6 +721,11 @@ const Point = struct {
 };
 
 fn day9() void {
+    day9part1();
+    day9part2();
+}
+
+fn day9part1() void {
     const cap = 100000;
     var blocks: [cap]i32 = .{-1} ** cap;
     var block_pos: usize = 0;
@@ -756,16 +761,87 @@ fn day9() void {
 
     var sum: i64 = 0;
     for (blocks, 0..) |id, i| {
-        if (id == -1) {
-            continue;
+        if (id != -1) {
+            const ii: i32 = @intCast(i);
+            sum += id * ii;
         }
-        const ii: i32 = @intCast(i);
-        sum += id * ii;
     }
 
     std.debug.print("day 9, part 1) {}, right answer 6395800119709\n", .{sum});
+}
 
-    std.debug.print("day 9, part 2) {}, right answer TODO\n", .{666});
+fn day9part2() void {
+    const cap = 100000;
+    var blocks: [cap]i32 = .{-1} ** cap;
+    var block_pos: usize = 0;
+    var is_file = true;
+    var file_id: i32 = 0;
+    for (day9input) |c| {
+        if (is_file) {
+            for ('0'..c) |i| {
+                _ = i;
+                blocks[block_pos] = file_id;
+                block_pos += 1;
+            }
+            file_id += 1;
+        } else {
+            block_pos += (c - '0');
+        }
+        is_file = !is_file;
+    }
+
+    var file_end = block_pos - 1;
+    while (file_end > 0) {
+        // Find the file bounds.
+        var file_start = file_end;
+        while (file_start > 0 and blocks[file_start - 1] == blocks[file_end]) {
+            file_start -= 1;
+        }
+
+        // Traverse the free spaces.
+        var free_start: usize = 0;
+        while (free_start < file_start) {
+            while (blocks[free_start] != -1) {
+                free_start += 1;
+            }
+            var free_end = free_start;
+            while (free_end < block_pos and blocks[free_end + 1] == blocks[free_start]) {
+                free_end += 1;
+            }
+
+            // If the free space is left of the file and large enough to hold
+            // it, move the file there.
+            if (free_end < file_start and free_end - free_start >= file_end - file_start) {
+                const n = file_end - file_start + 1;
+                for (0..n) |i| {
+                    blocks[free_start + i] = blocks[file_start + i];
+                    blocks[file_start + i] = -1;
+                }
+                break;
+            }
+
+            free_start = free_end + 1;
+        }
+
+        // Go to previous file.
+        if (file_start == 0) {
+            break;
+        }
+        file_end = file_start - 1;
+        while (file_end > 0 and blocks[file_end] == -1) {
+            file_end -= 1;
+        }
+    }
+
+    var sum: i64 = 0;
+    for (blocks, 0..) |id, i| {
+        if (id != -1) {
+            const ii: i32 = @intCast(i);
+            sum += id * ii;
+        }
+    }
+
+    std.debug.print("day 9, part 2) {}, right answer 6418529470362\n", .{sum});
 }
 
 fn day10() void {
